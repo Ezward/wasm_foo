@@ -1,0 +1,106 @@
+(module
+
+    (;
+    ;; set a dot on a bitmap given coordinates, color and bitmap context
+    ;;
+    ;; @param x i32 horizontal coordinate
+    ;; @param y i32 vertical coordinate
+    ;; @param color i32 palette index to choose color
+    ;)
+    (func $dot (import "imports" "dot") (param $x i32) (param $y i32) (param $color i32))
+
+    (;
+    ;; calculate the mandelbrot value for the given
+    ;; coordinate on the mandelbrot plane 
+    ;;
+    ;; @param mx float horizontal coord -1.0 <= mx <= 1.0
+    ;; @param mx float vertical coord -2.5 <= my <= 1.0
+    ;; @param max int maximum iterations
+    ;; @param dx i32 horizontal pixel coordinate
+    ;; @param dy i32 vertical pixel coordinate
+    ;)
+    (func $mandelbrot (param $mx f64) (param $my f64) (param $max i32) (param $px i32) (param $py i32)
+
+        ;; 
+        ;; calculate to convergence or max 1000 iterations
+        ;; 
+        ;; let x = 0.0;
+        ;; let y = 0.0;
+        ;; let n = 0;   // number of iterations
+        ;; while((n < max) && (x*x + y*y < 4)) {
+        ;;     const newx = x*x - y*y + mx;
+        ;;     y = 2 * x * y + my;
+        ;;     x = newx;
+        ;;     n += 1;
+        ;; }
+        ;; return n;       // color is determined by number of iterations
+
+        ;; let x = 0.0;
+        ;; let y = 0.0;
+        ;; let n = 0;
+        (local $x f64)
+        (local $y f64)
+        (local $n i32)
+
+        ;; while((n < max) && (x*x + y*y < 4)) {
+        loop $while
+            get_local $n
+            get_local $max
+            i32.lt_s
+            if
+                get_local $x
+                get_local $x
+                f64.mul
+                get_local $y
+                get_local $y
+                f64.mul
+                f64.add
+                f64.const 4.0
+                f64.lt
+                if
+                    ;;     const newx = x*x - y*y + mx;
+                    get_local $x
+                    get_local $x
+                    f64.mul
+                    get_local $y
+                    get_local $y
+                    f64.mul
+                    f64.sub
+                    get_local $mx
+                    f64.add         ;; newx will stay on stack
+
+                    ;;     y = 2 * x * y + my;
+                    get_local $x
+                    get_local $y
+                    f64.mul
+                    f64.const 2.0
+                    f64.mul
+                    get_local $my
+                    f64.add
+                    set_local $y
+
+                    ;;     x = newx;
+                    set_local $x    ;; get from top of stack
+
+                    ;;     n += 1;
+                    get_local $n
+                    i32.const 1
+                    i32.add
+                    set_local $n
+
+                    br $while   ;; back to top of loop
+                end
+            end
+        end
+
+        ;; 
+        ;; set the dot
+        ;;
+        get_local $px
+        get_local $py
+        get_local $n
+        call $dot
+    )
+
+    (export "mandelbrot" (func $mandelbrot))
+)

@@ -1,0 +1,1 @@
+wat2wasm if.wat -o if.wasm

@@ -1,0 +1,1 @@
+wat2wasm call.wat -o call.wasm

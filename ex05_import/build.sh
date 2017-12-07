@@ -1,0 +1,1 @@
+wat2wasm import.wat -o import.wasm

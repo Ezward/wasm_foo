@@ -1,0 +1,29 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>example of exporting a function</title>
+  </head>
+
+  <body>
+    <script>
+        // fetchAndInstantiate() found in wasm-utils.js
+        function fetchAndInstantiate(url, importObject) {
+            return fetch(url).then(response =>
+                response.arrayBuffer()
+            ).then(bytes =>
+                WebAssembly.instantiate(bytes, importObject)
+            ).then(results =>
+                results.instance
+            );
+        }
+
+        fetchAndInstantiate('add.wasm').then(function(instance) {
+            console.log("123 + 456 == " + instance.exports.add(123, 456));  // 123 + 456 == 579
+        });
+    </script>
+  </body>
+
+</html>

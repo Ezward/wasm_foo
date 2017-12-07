@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>example of calling an imported javascript function</title>
+  </head>
+
+  <body>
+    <script>
+        // fetchAndInstantiate() found in wasm-utils.js
+        function fetchAndInstantiate(url, importObject) {
+            return fetch(url).then(response =>
+                response.arrayBuffer()
+            ).then(bytes =>
+                WebAssembly.instantiate(bytes, importObject)
+            ).then(results =>
+                results.instance
+            );
+        }
+
+        var wasmImports = {
+            imports: {
+                logint: (arg) => console.log(arg)
+            }
+        }
+        fetchAndInstantiate('import.wasm', wasmImports).then(function(instance) {
+            console.log("5! == ");  instance.exports.logfactorial(5);  // 5! == 120
+            console.log("0! == ");  instance.exports.logfactorial(0);  // 0! == 1
+            console.log("-5! == "); instance.exports.logfactorial(-5);  // -5! == 1
+        });
+    </script>
+  </body>
+
+</html>

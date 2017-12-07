@@ -1,0 +1,1 @@
+wat2wasm loop.wat -o loop.wasm
