@@ -97,7 +97,11 @@ const Palette = (function() {
             const r = color(i, 128, 4);
             const g = color(i, 0, 4);
             const b = color(i, 356, 4);
-            palette.push("#" + ("000000" + (r * 256 * 256 + g * 256 + b).toString(16)).slice(-6));
+            // palette.push("#" + ("000000" + (r * 256 * 256 + g * 256 + b).toString(16)).slice(-6));
+            // palette.push("#" + ("000000" + (r << 16 | g << 8 | b).toString(16)).slice(-6));
+            // palette.push("#" + ("000000" + (b | ((g | (r << 8)) << 8)).toString(16)).slice(-6));
+            palette.push("rgba(" + r + "," + g + "," + b + ",255)")
+                        
         }
 
         return palette;

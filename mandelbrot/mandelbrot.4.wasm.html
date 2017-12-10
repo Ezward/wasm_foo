@@ -1,0 +1,96 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Mandelbrot set using Webassembly for calculations</title>
+
+    <script src="palette.js" type="text/javascript"></script>
+    
+    <script>
+        // fetchAndInstantiate() found in wasm-utils.js
+        function fetchAndInstantiate(url, importObject) {
+            return fetch(url).then(response =>
+                response.arrayBuffer()
+            ).then(bytes =>
+                WebAssembly.instantiate(bytes, importObject)
+            ).then(results =>
+                results.instance
+            );
+        }
+    </script>
+
+    <style>
+        #container {
+            width: 700px;
+            height: 400px;
+        }
+        #canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+  </head>
+
+  <body>
+      <div id="container">
+          <canvas id="canvas">
+              Oops! It appears that your browser does not support the canvas tag.
+          </canvas>
+      </div>
+    <script>
+
+        const container = document.querySelector("#container");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        const canvas = container.querySelector("#canvas");
+        const context = canvas.getContext("2d");
+
+        // set canvas coordinate system to pixels
+        canvas.width = width;
+        canvas.height = height;
+
+        const palette = Palette.mandelbrotPalette(1000);
+
+        function bitmapPages(width, height) {
+            const bytes = width * height * 4;   // number of bytes for RGBa pixels
+            const bytesPerPage = 1 << 16;               // WASM page is 64 kilobytes
+            const pages = Math.floor((bytes + bytesPerPage - 1) / bytesPerPage);
+            return pages;
+        }
+        const pages = bitmapPages(width, height);
+        const memory = new WebAssembly.Memory({initial:pages});
+        const imageData = new ImageData(new Uint8ClampedArray(memory.buffer, 0, width*height*4), width, height)
+
+        //
+        // set coordinate system of canvas to be in pixels
+        //
+        function onResize(mandelbrotFunc, width, height, max, bitmap, context) {
+            const startTime = new Date();
+
+            mandelbrotFunc(max, -2.5, -1.0, 3.5, 2.0, 0, 0, width, height);
+            context.putImageData(bitmap, 0, 0);
+
+            const endTime = new Date();
+            console.log("elapsed time: " + (endTime.getTime() - startTime.getTime()));
+        }
+
+
+        const wasmImports = {
+            imports: {
+                mem: memory
+            }
+        };
+
+        fetchAndInstantiate('mandelbrot.4.wasm', wasmImports).then(function(instance) {
+
+            onResize(instance.exports.mandelbrot, width, height, palette.length, imageData, context);
+
+        });
+
+    </script>
+  </body>
+
+</html>
