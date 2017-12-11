@@ -318,15 +318,15 @@
         ;; return color(n, 352, 5) | ((color(n, 0, 5) | ((color(n, 150, 5) | (0xFF << 8)) << 8)) << 8)
         ;;
         (i32.or
-            (call $color (get_local $n) (i32.const 352) (i32.const 5))
+            (call $color (get_local $n) (i32.const 160) (i32.const 4))                  ;; red
             (i32.shl
                 (i32.or 
-                    (call $color (get_local $n) (i32.const 0) (i32.const 5))
+                    (call $color (get_local $n) (i32.const 0) (i32.const 4))            ;; green
                     (i32.shl 
                         (i32.or 
-                            (call $color (get_local $n) (i32.const 160) (i32.const 5)) 
+                            (call $color (get_local $n) (i32.const 352) (i32.const 4))  ;; blue
                             (i32.shl
-                                (i32.const 0xFF)
+                                (i32.const 0xFF)                                        ;; alpha
                                 (i32.const 8)
                             )
                         )
