@@ -288,17 +288,17 @@
         ;; if (n < 256) {
         get_local $n
         i32.const 256
-        i32.lt_s
+        i32.lt_u
         if (result i32)
             ;;     return n;
             get_local $n
         else    ;; } else if (n < 512) {
             get_local $n
             i32.const 512
-            i32.lt_s
+            i32.lt_u
             if (result i32)
-                ;;     return 255 - (n - 255);
-                (i32.sub (i32.const 255) (i32.sub (get_local $n) (i32.const 255)))
+                ;;     return 255 - (n - 256);
+                (i32.sub (i32.const 255) (i32.sub (get_local $n) (i32.const 256)))
             else
                 ;;     return 0;
                 i32.const 0
@@ -315,16 +315,16 @@
     ;)
     (func $mandelbrotColor (param $n i32) (result i32)
         ;;
-        ;; return color(n, 356, 4) | ((color(n, 0, 4) | ((color(n, 128, 4 ) | (0xFF << 8)) << 8)) << 8)
+        ;; return color(n, 352, 5) | ((color(n, 0, 5) | ((color(n, 150, 5) | (0xFF << 8)) << 8)) << 8)
         ;;
         (i32.or
-            (call $color (get_local $n) (i32.const 356) (i32.const 4))
+            (call $color (get_local $n) (i32.const 352) (i32.const 5))
             (i32.shl
                 (i32.or 
-                    (call $color (get_local $n) (i32.const 0) (i32.const 4))
+                    (call $color (get_local $n) (i32.const 0) (i32.const 5))
                     (i32.shl 
                         (i32.or 
-                            (call $color (get_local $n) (i32.const 128) (i32.const 4)) 
+                            (call $color (get_local $n) (i32.const 160) (i32.const 5)) 
                             (i32.shl
                                 (i32.const 0xFF)
                                 (i32.const 8)

@@ -116,8 +116,7 @@
             
         }
 
-        const max = 1000;
-        let palette = Palette.mandelbrotPalette(max);
+        let palette = Palette.mandelbrotPalette(1000);
         window.onresize = function() {
             onResize(mandelbrot, palette);
         };

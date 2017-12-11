@@ -6,8 +6,6 @@
     <meta charset="utf-8">
     <title>Mandelbrot set using Webassembly for calculations</title>
 
-    <script src="palette.js" type="text/javascript"></script>
-    
     <script>
         // fetchAndInstantiate() found in wasm-utils.js
         function fetchAndInstantiate(url, importObject) {
@@ -52,8 +50,6 @@
         canvas.width = width;
         canvas.height = height;
 
-        const palette = Palette.mandelbrotPalette(1000);
-
         function bitmapPages(width, height) {
             const bytes = width * height * 4;   // number of bytes for RGBa pixels
             const bytesPerPage = 1 << 16;               // WASM page is 64 kilobytes
@@ -70,7 +66,14 @@
         function onResize(mandelbrotFunc, width, height, max, bitmap, context) {
             const startTime = new Date();
 
+            //
+            // draw image to imageData bitmap
+            //
             mandelbrotFunc(max, -2.5, -1.0, 3.5, 2.0, 0, 0, width, height);
+
+            //
+            // render imageData bitmap onto the canvas (this is slow!!!)
+            //
             context.putImageData(bitmap, 0, 0);
 
             const endTime = new Date();
@@ -86,7 +89,7 @@
 
         fetchAndInstantiate('mandelbrot.4.wasm', wasmImports).then(function(instance) {
 
-            onResize(instance.exports.mandelbrot, width, height, palette.length, imageData, context);
+            onResize(instance.exports.mandelbrot, width, height, 1000, imageData, context);
 
         });
 

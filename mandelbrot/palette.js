@@ -77,7 +77,7 @@ const Palette = (function() {
         if (n < 256) {
             return n;
         } else if (n < 512) {
-            return 255 - (n - 255);
+            return 255 - (n - 256);
         } else {
             return 0;
         }
@@ -94,14 +94,15 @@ const Palette = (function() {
     exports.mandelbrotPalette = function (max) {
         const palette = [];
         for(let i = 0; i < max; i += 1) {
-            const r = color(i, 128, 4);
+            const r = color(i, 160, 4);
             const g = color(i, 0, 4);
-            const b = color(i, 356, 4);
+            const b = color(i, 352, 4);
             // palette.push("#" + ("000000" + (r * 256 * 256 + g * 256 + b).toString(16)).slice(-6));
             // palette.push("#" + ("000000" + (r << 16 | g << 8 | b).toString(16)).slice(-6));
             // palette.push("#" + ("000000" + (b | ((g | (r << 8)) << 8)).toString(16)).slice(-6));
-            palette.push("rgba(" + r + "," + g + "," + b + ",255)")
-                        
+            // palette.push("rgba(" + r + "," + g + "," + b + ", 255)")
+            palette.push("rgb(" + r + "," + g + "," + b + ")")
+            
         }
 
         return palette;
