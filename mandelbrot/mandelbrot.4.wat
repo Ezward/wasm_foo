@@ -315,7 +315,7 @@
     ;)
     (func $mandelbrotColor (param $n i32) (result i32)
         ;;
-        ;; return color(n, 352, 5) | ((color(n, 0, 5) | ((color(n, 150, 5) | (0xFF << 8)) << 8)) << 8)
+        ;; return red | (((((green << 8) | blue) << 8) | alpha) << 8)
         ;;
         (i32.or
             (call $color (get_local $n) (i32.const 160) (i32.const 4))                  ;; red
