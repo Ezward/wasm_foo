@@ -59,5 +59,12 @@ There is an outer loop in JavaScript that calls this function (passed as `mandel
 
 [mandelbrot.wasm.html](https://ezward.github.io/wasm_foo/mandelbrot/mandelbrot.wasm.html) replaces that JavaScript function with a web assembly function defined in [mandelbrot.wat](mandelbrot/mandelbrot.wat).  It does the same thing; it calculates the number of iterations of the Mandelbrot algorithm for a given pixel on the canvas.  
 
-[Mandelbrot in WASM](https://ezward.github.io/wasm_foo/index.html)
+[mandelbrot.2.wasm.html](https://ezward.github.io/wasm_foo/mandelbrot/mandelbrot.2.wasm.html), rather than returning the number of iterations, calls a drawDot() function imported from the JavaScript to draw the dot.  The drawDot() function does the palette lookup, then draws the one-pixel rectangle.  
+>> TODO: the drawDot() function can be sped up considerably by using a closer to capture the the drawing context rather than looking it up on each pixel.
+
+[mandelbrot.3.wasm.html](https://ezward.github.io/wasm_foo/mandelbrot/mandelbrot.3.wasm.html)
+
+[mandelbrot.4.wasm.html](https://ezward.github.io/wasm_foo/mandelbrot/mandelbrot.4.wasm.html)
+
+[Mandelbrot in WASM](https://ezward.github.io/wasm_foo/mandelbrot/index.html)
 
