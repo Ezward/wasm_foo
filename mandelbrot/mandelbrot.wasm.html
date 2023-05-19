@@ -91,7 +91,7 @@
 
 
 
-        fetchAndInstantiate('mandelbrot/mandelbrot.wasm').then(function(instance) {
+        fetchAndInstantiate('mandelbrot.wasm').then(function(instance) {
             const max = 1000;
             let palette = Palette.mandelbrotPalette(max);
             window.addEventListener("resize", function() {
