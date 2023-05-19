@@ -43,62 +43,62 @@
         (local $n i32)
 
         ;; while((n < max) && (x*x + y*y < 4)) {
-        loop $while
-            get_local $n
-            get_local $max
+        (loop $while
+            local.get $n
+            local.get $max
             i32.lt_s
-            if
-                get_local $x
-                get_local $x
+            (if (then
+                local.get $x
+                local.get $x
                 f64.mul
-                get_local $y
-                get_local $y
+                local.get $y
+                local.get $y
                 f64.mul
                 f64.add
                 f64.const 4.0
                 f64.lt
-                if
+                (if (then
                     ;;     const newx = x*x - y*y + mx;
-                    get_local $x
-                    get_local $x
+                    local.get $x
+                    local.get $x
                     f64.mul
-                    get_local $y
-                    get_local $y
+                    local.get $y
+                    local.get $y
                     f64.mul
                     f64.sub
-                    get_local $mx
+                    local.get $mx
                     f64.add         ;; newx will stay on stack
 
                     ;;     y = 2 * x * y + my;
-                    get_local $x
-                    get_local $y
+                    local.get $x
+                    local.get $y
                     f64.mul
                     f64.const 2.0
                     f64.mul
-                    get_local $my
+                    local.get $my
                     f64.add
-                    set_local $y
+                    local.set $y
 
                     ;;     x = newx;
-                    set_local $x    ;; get from top of stack
+                    local.set $x    ;; get from top of stack
 
                     ;;     n += 1;
-                    get_local $n
+                    local.get $n
                     i32.const 1
                     i32.add
-                    set_local $n
+                    local.set $n
 
                     br $while   ;; back to top of loop
-                end
-            end
-        end
+                ))
+            ))
+        )
 
         ;; 
         ;; set the dot
         ;;
-        get_local $px
-        get_local $py
-        get_local $n
+        local.get $px
+        local.get $py
+        local.get $n
         call $dot
     )
 

@@ -53,90 +53,90 @@
 
         ;; for(let y = 0; y < pHeight; y += 1) {
         i32.const 0
-        set_local $y
-        loop $for_y
-            get_local $y
-            get_local $pHeight
+        local.set $y
+        (loop $for_y
+            local.get $y
+            local.get $pHeight
             i32.lt_s
-            if
+            (if (then
                 ;;     //
                 ;;     // scale pixel into mandelbrot vertical range -1 to 1
                 ;;     //
                 ;;     const mandely = my + (y * mHeight / pHeight);
-                get_local $y
-                f64.convert_s/i32   ;; convert y to float
-                get_local $mHeight
+                local.get $y
+                f64.convert_i32_s   ;; convert y to float
+                local.get $mHeight
                 f64.mul
-                get_local $pHeight
-                f64.convert_s/i32   ;; convert pixel height to float
+                local.get $pHeight
+                f64.convert_i32_s   ;; convert pixel height to float
                 f64.div
-                get_local $my
+                local.get $my
                 f64.add
-                set_local $mandely
+                local.set $mandely
 
                 ;;     const pixely = py + y;
-                get_local $py
-                get_local $y
+                local.get $py
+                local.get $y
                 i32.add
-                set_local $pixely
+                local.set $pixely
 
                 ;;     for(let x = 0; x < pWidth; x += 1) {
                 i32.const 0
-                set_local $x
-                loop $for_x
-                    get_local $x
-                    get_local $pWidth
+                local.set $x
+                (loop $for_x
+                    local.get $x
+                    local.get $pWidth
                     i32.lt_s
-                    if
-                        get_local $max  ;; leave on stack as first arg to call; $max
+                    (if (then
+                        local.get $max  ;; leave on stack as first arg to call; $max
 
                         ;;         //
                         ;;         // scale pixel coordinate into mandelbrot horizontal scale -2.5 to 1
                         ;;         //
                         ;;         const mandelx = mx + (x * mWidth / pWidth);
-                        get_local $x
-                        f64.convert_s/i32     ;; convert pixel x to float
-                        get_local $mWidth
+                        local.get $x
+                        f64.convert_i32_s     ;; convert pixel x to float
+                        local.get $mWidth
                         f64.mul
-                        get_local $pWidth
-                        f64.convert_s/i32     ;; convert pixel width to float
+                        local.get $pWidth
+                        f64.convert_i32_s     ;; convert pixel width to float
                         f64.div
-                        get_local $mx
+                        local.get $mx
                         f64.add
                         ;; leave on stack as second arg to call; $mandelx
 
-                        get_local $mandely  ;; this will be third arg to call; mandely
+                        local.get $mandely  ;; this will be third arg to call; mandely
 
                         ;;         const pixelx = px + x;
-                        get_local $px
-                        get_local $x
+                        local.get $px
+                        local.get $x
                         i32.add
                         ;; leave on stack as fourth arg to call; pixelx
 
-                        get_local $pixely   ;; fifth arg to call; pixely
+                        local.get $pixely   ;; fifth arg to call; pixely
 
                         ;;         const n = mandelbrotPoint(max, mandelx, mandely, pixelx, pixely);
                         call $mandelbrotPoint
 
                         ;; x += 1
-                        get_local $x
+                        local.get $x
                         i32.const 1
                         i32.add
-                        set_local $x
+                        local.set $x
 
                         br $for_x
-                    end
-                end
+                    ))
+                )
 
                 ;; y += 1
-                get_local $y
+                local.get $y
                 i32.const 1
                 i32.add
-                set_local $y
+                local.set $y
 
                 br $for_y
-            end
-        end
+            ))
+        )
     )
 
     (;
@@ -173,62 +173,62 @@
         (local $n i32)
 
         ;; while((n < max) && (x*x + y*y < 4)) {
-        loop $while
-            get_local $n
-            get_local $max
+        (loop $while
+            local.get $n
+            local.get $max
             i32.lt_s
-            if
-                get_local $x
-                get_local $x
+            (if (then
+                local.get $x
+                local.get $x
                 f64.mul
-                get_local $y
-                get_local $y
+                local.get $y
+                local.get $y
                 f64.mul
                 f64.add
                 f64.const 4.0
                 f64.lt
-                if
+                (if (then
                     ;;     const newx = x*x - y*y + mx;
-                    get_local $x
-                    get_local $x
+                    local.get $x
+                    local.get $x
                     f64.mul
-                    get_local $y
-                    get_local $y
+                    local.get $y
+                    local.get $y
                     f64.mul
                     f64.sub
-                    get_local $mx
+                    local.get $mx
                     f64.add         ;; newx will stay on stack
 
                     ;;     y = 2 * x * y + my;
-                    get_local $x
-                    get_local $y
+                    local.get $x
+                    local.get $y
                     f64.mul
                     f64.const 2.0
                     f64.mul
-                    get_local $my
+                    local.get $my
                     f64.add
-                    set_local $y
+                    local.set $y
 
                     ;;     x = newx;
-                    set_local $x    ;; get from top of stack
+                    local.set $x    ;; get from top of stack
 
                     ;;     n += 1;
-                    get_local $n
+                    local.get $n
                     i32.const 1
                     i32.add
-                    set_local $n
+                    local.set $n
 
                     br $while   ;; back to top of loop
-                end
-            end
-        end
+                ))
+            ))
+        )
 
         ;; 
         ;; set the dot
         ;;
-        get_local $px
-        get_local $py
-        get_local $n
+        local.get $px
+        local.get $py
+        local.get $n
         call $dot
     )
 

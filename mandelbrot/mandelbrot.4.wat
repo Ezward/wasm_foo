@@ -55,108 +55,111 @@
         ;; }
         ;;
 
-        ;; for(let y = 0; y < pHeight; y += 1) {
+        ;; for(let y = 0; y < pHeight; y += 1) 
         i32.const 0
-        set_local $y
-        loop $for_y
-            get_local $y
-            get_local $pHeight
+        local.set $y
+        (loop $for_y
+            local.get $y
+            local.get $pHeight
             i32.lt_s
-            if
+            (if (then
                 ;;     //
                 ;;     // scale pixel into mandelbrot vertical range -1 to 1
                 ;;     //
                 ;;     const mandely = my + (y * mHeight / pHeight);
-                get_local $y
-                f64.convert_s/i32   ;; convert y to float
-                get_local $mHeight
+                local.get $y
+                f64.convert_i32_s   ;; convert y to float
+                local.get $mHeight
                 f64.mul
-                get_local $pHeight
-                f64.convert_s/i32   ;; convert pixel height to float
+                local.get $pHeight
+                f64.convert_i32_s   ;; convert pixel height to float
                 f64.div
-                get_local $my
+                local.get $my
                 f64.add
-                set_local $mandely
+                local.set $mandely
 
                 ;;     const pixely = py + y;
-                get_local $py
-                get_local $y
+                local.get $py
+                local.get $y
                 i32.add
-                set_local $pixely
+                local.set $pixely
 
                 ;;     for(let x = 0; x < pWidth; x += 1) {
                 i32.const 0
-                set_local $x
-                loop $for_x
-                    get_local $x
-                    get_local $pWidth
+                local.set $x
+                (loop $for_x
+                    local.get $x
+                    local.get $pWidth
                     i32.lt_s
-                    if
-                        get_local $max  ;; leave on stack as first arg to call; $max
+                    (if (then
+                        local.get $max  ;; leave on stack as first arg to call; $max
 
                         ;;         //
                         ;;         // scale pixel coordinate into mandelbrot horizontal scale -2.5 to 1
                         ;;         //
                         ;;         const mandelx = mx + (x * mWidth / pWidth);
-                        get_local $x
-                        f64.convert_s/i32     ;; convert pixel x to float
-                        get_local $mWidth
+                        local.get $x
+                        f64.convert_i32_s     ;; convert pixel x to float
+                        local.get $mWidth
                         f64.mul
-                        get_local $pWidth
-                        f64.convert_s/i32     ;; convert pixel width to float
+                        local.get $pWidth
+                        f64.convert_i32_s     ;; convert pixel width to float
                         f64.div
-                        get_local $mx
+                        local.get $mx
                         f64.add
                         ;; leave on stack as second arg to call; $mandelx
 
-                        get_local $mandely  ;; this will be third arg to call; mandely
+                        local.get $mandely  ;; this will be third arg to call; mandely
 
                         ;;         const pixelx = px + x;
-                        get_local $px
-                        get_local $x
+                        local.get $px
+                        local.get $x
                         i32.add
                         ;; leave on stack as fourth arg to call; pixelx
 
-                        get_local $pixely   ;; fifth arg to call; pixely
+                        local.get $pixely   ;; fifth arg to call; pixely
 
                         ;;         const n = mandelbrotPoint(max, mandelx, mandely, pixelx, pixely);
                         call $mandelbrotPoint   ;; this pushes n on the value stack
-                        set_local $n
+                        local.set $n
 
                         ;;         if(n < max) {
                         ;;             // white;
                         ;;         } else {
                         ;;             // black;
                         ;;         }
-                        get_local $n
-                        get_local $max
+                        local.get $n
+                        local.get $max
                         i32.lt_s
-                        if
-                            ;; (i32.store (get_local $pixelOffset) (i32.const 0xFFFFFFFF))
-                            (i32.store (get_local $pixelOffset) (call $mandelbrotColor (get_local $n)))
-                        else
-                            (i32.store (get_local $pixelOffset) (i32.const 0xFF000000))
-                        end
+                        (if 
+                            (then
+                                ;; (i32.store (local.get $pixelOffset) (i32.const 0xFFFFFFFF))
+                                (i32.store (local.get $pixelOffset) (call $mandelbrotColor (local.get $n)))
+                            )
+                            (else
+                                (i32.store (local.get $pixelOffset) (i32.const 0xFF000000))
+                            )
+                        )
 
                         ;; pixelOffset += 4
-                        (set_local $pixelOffset (i32.add (get_local $pixelOffset) (i32.const 4)))
+                        (local.set $pixelOffset (i32.add (local.get $pixelOffset) (i32.const 4)))
 
                         ;; x += 1
-                        (set_local $x (i32.add (get_local $x) (i32.const 1)))
+                        (local.set $x (i32.add (local.get $x) (i32.const 1)))
 
                         br $for_x
-                    end
-                end
+                    ))
+                )
 
                 ;; y += 1
-                get_local $y
+                local.get $y
                 i32.const 1
                 i32.add
-                set_local $y
+                local.set $y
 
                 br $for_y
-            end
-        end
+            ))
+        )
     )
 
     (;
@@ -194,58 +197,58 @@
         (local $n i32)
 
         ;; while((n < max) && (x*x + y*y < 4)) {
-        loop $while
-            get_local $n
-            get_local $max
+        (loop $while
+            local.get $n
+            local.get $max
             i32.lt_s
-            if
-                get_local $x
-                get_local $x
+            (if (then
+                local.get $x
+                local.get $x
                 f64.mul
-                get_local $y
-                get_local $y
+                local.get $y
+                local.get $y
                 f64.mul
                 f64.add
                 f64.const 4.0
                 f64.lt
-                if
+                (if (then
                     ;;     const newx = x*x - y*y + mx;
-                    get_local $x
-                    get_local $x
+                    local.get $x
+                    local.get $x
                     f64.mul
-                    get_local $y
-                    get_local $y
+                    local.get $y
+                    local.get $y
                     f64.mul
                     f64.sub
-                    get_local $mx
+                    local.get $mx
                     f64.add         ;; newx will stay on stack
 
                     ;;     y = 2 * x * y + my;
-                    get_local $x
-                    get_local $y
+                    local.get $x
+                    local.get $y
                     f64.mul
                     f64.const 2.0
                     f64.mul
-                    get_local $my
+                    local.get $my
                     f64.add
-                    set_local $y
+                    local.set $y
 
                     ;;     x = newx;
-                    set_local $x    ;; get from top of stack
+                    local.set $x    ;; get from top of stack
 
                     ;;     n += 1;
-                    get_local $n
+                    local.get $n
                     i32.const 1
                     i32.add
-                    set_local $n
+                    local.set $n
 
                     br $while   ;; back to top of loop
-                end
-            end
-        end
+                ))
+            ))
+        )
 
         ;; return number of iterations
-        get_local $n
+        local.get $n
     )
 
     (;
@@ -271,39 +274,45 @@
         ;; 
 
         ;; n = ((n * scale) + offset) % 1024;
-        (set_local 
+        (local.set 
             $n 
             (i32.rem_u 
                 (i32.add 
                     (i32.mul 
-                        (get_local $n) 
-                        (get_local $scale)
+                        (local.get $n) 
+                        (local.get $scale)
                     )
-                    (get_local $offset) 
+                    (local.get $offset) 
                 )
                 (i32.const 1024) 
             )
         )
 
         ;; if (n < 256) {
-        get_local $n
+        local.get $n
         i32.const 256
         i32.lt_u
-        if (result i32)
-            ;;     return n;
-            get_local $n
-        else    ;; } else if (n < 512) {
-            get_local $n
-            i32.const 512
-            i32.lt_u
-            if (result i32)
-                ;;     return 255 - (n - 256);
-                (i32.sub (i32.const 255) (i32.sub (get_local $n) (i32.const 256)))
-            else
-                ;;     return 0;
-                i32.const 0
-            end
-        end
+        (if (result i32) 
+            (then
+                ;;     return n;
+                local.get $n
+            )
+            (else    ;; } else if (n < 512) {
+                local.get $n
+                i32.const 512
+                i32.lt_u
+                (if (result i32)
+                    (then
+                        ;;     return 255 - (n - 256);
+                        (i32.sub (i32.const 255) (i32.sub (local.get $n) (i32.const 256)))
+                    )
+                    (else
+                        ;;     return 0;
+                        i32.const 0
+                    )
+                )
+            )
+        )   
     )
 
 
@@ -318,13 +327,13 @@
         ;; return red | (((((green << 8) | blue) << 8) | alpha) << 8)
         ;;
         (i32.or
-            (call $color (get_local $n) (i32.const 160) (i32.const 4))                  ;; red
+            (call $color (local.get $n) (i32.const 160) (i32.const 4))                  ;; red
             (i32.shl
                 (i32.or 
-                    (call $color (get_local $n) (i32.const 0) (i32.const 4))            ;; green
+                    (call $color (local.get $n) (i32.const 0) (i32.const 4))            ;; green
                     (i32.shl 
                         (i32.or 
-                            (call $color (get_local $n) (i32.const 352) (i32.const 4))  ;; blue
+                            (call $color (local.get $n) (i32.const 352) (i32.const 4))  ;; blue
                             (i32.shl
                                 (i32.const 0xFF)                                        ;; alpha
                                 (i32.const 8)
